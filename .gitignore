@@ -1,0 +1,13 @@
+node_modules/
+.vscode/
+
+# Ignore working folders
+analysis/
+transcripts/
+
+# Ignore faster-whisper cache
+.cache/
+
+# Allow only .ogg files to be committed
+*.mp3
+*.wav

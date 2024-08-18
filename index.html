@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice Transcripts</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    .narrative {
+      max-width: 40rem;
+    }
+
+    [data-seg-id]:hover {
+      background-color: rgba(var(--bs-warning-rgb), 0.1);
+      cursor: pointer;
+    }
+
+    .highlight {
+      background-color: rgba(var(--bs-warning-rgb), 0.5);
+    }
+
+    [data-modal] {
+      cursor: pointer;
+    }
+
+    .table .selected-cell {
+      background-color: var(--bs-body-color);
+      color: var(--bs-body-bg)
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href=".">Voice Transcripts</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="nav-item dropdown ms-auto" role="group" aria-label="Toggle dark mode" title="Toggle Dark Mode">
+          <button class="dark-theme-toggle btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Toggle theme (auto)">
+            <i class="bi bi-circle-half"></i> <span class="d-lg-none ms-2">Toggle theme</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><button class="dropdown-item" data-bs-theme-value="light"><i class="me-2 bi bi-sun-fill"></i> Light</button></li>
+            <li><button class="dropdown-item" data-bs-theme-value="dark"><i class="me-2 bi bi-moon-stars-fill"></i> Dark</button></li>
+            <li><button class="dropdown-item" data-bs-theme-value="auto"><i class="me-2 bi bi-circle-half"></i> Auto</button></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <h1 class="display-1 my-4 text-center">Voice Transcripts</h1>
+    <h2 class="display-6 text-center">AI-powered customer service call evaluation</h2>
+    <div class="mx-auto my-3 narrative">
+      <p>Monitoring calls takes effort from experienced team members. So customer service teams usually review only a sample. This often leads to complaints, dissatisfied customers and missed teachable opportunities.</p>
+      <p>What we need is a system to</p>
+      <ul>
+        <li><strong>Transcribe calls</strong> automatically, allowing managers to glance through the call quickly</li>
+        <li><strong>List issues</strong> raised by the customer, and see if they're <strong>resolved</strong>, and how</li>
+        <li><strong>Evaluate agents</strong> on their quality, training them on the fly while identifying strong performers</li>
+      </ul>
+      <hr>
+      <p>In this demo, we take ~20 call audio files (<a target="_blank" href="audio/banking-2.ogg"><i class="bi bi-soundwave"></i> like this one</a>) and transcribe, analyze and audit them.</p>
+      <p><strong>Click on any cell</strong> for details. Then press ⬅️ and ➡️ to navigate.</p>
+    </div>
+    <div id="results"></div>
+
+    <hr class="my-5">
+    <div class="mx-auto my-5 narrative">
+      <h2 class="h3">How does it work?</h2>
+      <p>We <strong>transcribe</strong> audio files using the open-source <a href="https://github.com/openai/whisper">Whisper</a> model. It's great at stripping out "uh...", "um...", etc. and creating a cohesive transcript.</p>
+      <p>We <strong>diarize</strong> the transcript to add speaker names with <a href="https://www.anthropic.com/news/claude-3-haiku">Anthropic's Claude 3 Haiku</a>,
+        a <a href="https://gramener.com/llmpricing/">frontier model</a> using this simple prompt:
+        <q class="fw-italic">Label this call transcript between an agent and caller based on context</q>.
+        But by defining a <a href="https://docs.anthropic.com/en/docs/tool-use#specifying-tools">schema for the transcript</a>,
+        the output is well quite accurate.</p>
+      <p>We <strong>analyze</strong> the transcript using the prompt: <q>List each customer issue, whether it was resolved, your reasoning and next steps</q> and a structured output schema to generate a table.</p>
+      <p>Finally, we <strong>audit</strong> the transcript with the prompt: <q>Evaluate customer service agent on each parameter. null = N/A, true = Yes, false = No. Provide reason for each answer.</q>, passing it a schema that audits on the criteria above.</p>
+      <p><a href="https://code.gramener.com/cto/voicetranscripts">See code</a></p>
+
+      <h2 class="h3">How long does it take?</h2>
+      <p>The entire analysis for a 20 minute call takes <strong>under half a minute</strong>.</p>
+
+      <h2 class="h3">How much does it cost?</h2>
+      <p>For Claude 3 Haiku, the cost is <strong>under 1 cent</strong> per call, but could go up to 20 cents for more powerful models like GPT-4o.</p>
+
+      <h2 class="h3">Can this run privately?</h2>
+      <p><strong>Yes</strong>. With open-weight models like <a href="https://github.com/openai/whisper">Whisper</a> and <a href="https://llama.meta.com/llama3/">LLama-3</a>, you can run this in your data center (or even your gaming laptop).</p>
+
+      <h2 class="h3">How is this priced?</h2>
+      <p>This is not a product. It's a demo. Email <a href="mailto:s.anand@gramener.com">s.anand@gramener.com</a> for details.</p>
+    </div>
+  </div>
+
+  <footer class="my-5 vh-100 d-flex align-items-center justify-content-center">
+    <h1 class="display-4">Designed by <a href="https://gramener.com/" class="text-reset link-offset-3 link-underline link-underline-opacity-25">Gramener</a></h1>
+  </footer>
+
+  <div class="modal" tabindex="-1" id="info-modal">
+    <div class="modal-dialog">
+      <div class="modal-content" id="info-modal">
+        <div class="modal-header">
+          <h5 class="modal-title" id="info-modal-title"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="info-modal-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" type="module"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@gramex/ui@0.3/dist/dark-theme.js" type="module"></script>
+  <script src="script.js" type="module"></script>
+</body>
+
+</html>
